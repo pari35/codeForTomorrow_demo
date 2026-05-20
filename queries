@@ -1,8 +1,14 @@
+-- 1. Completely remove the old table if it already exists
+DROP TABLE IF EXISTS weather_city_logs;
+
+-- 2. Create the clean table with the correct data columns
 CREATE TABLE weather_city_logs (
     id SERIAL PRIMARY KEY,
-    city_name VARCHAR(100) NOT NULL,
+    city_name VARCHAR(100) NOT NULL UNIQUE, -- Added UNIQUE constraint so Upserts/Updates work smoothly
     temp DECIMAL(5,2),
-    date DATE,
+    humidity INT,
+    condition VARCHAR(50),
+    log_date DATE DEFAULT CURRENT_DATE,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
