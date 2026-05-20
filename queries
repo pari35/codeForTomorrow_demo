@@ -1,0 +1,17 @@
+CREATE TABLE weather_city_logs (
+    id SERIAL PRIMARY KEY,
+    city_name VARCHAR(100) NOT NULL,
+    temp DECIMAL(5,2),
+    date DATE,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO weather_city_logs (city_name, temp, date)
+VALUES
+('Mumbai', 32.5, '2026-05-20'),
+('Delhi', 38.2, '2026-05-20'),
+('Pune', 29.4, '2026-05-20'),
+('Bengaluru', 27.1, '2026-05-20'),
+('Chennai', 34.8, '2026-05-20'),
+('Hyderabad', 31.6, '2026-05-20'),
+('Kolkata', 33.3, '2026-05-20');
