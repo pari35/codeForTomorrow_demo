@@ -1,36 +1,39 @@
 import { getCitiesRepo, getCityByNameRepo, saveCityWeatherRepo } from "../repositories/waetherAnalytics.js";
 
 import url from 'url';
+import dotenv from "dotenv"
 
-const API_KEY = '27ca77a5c296d4babd7f47e82016b73f';
-const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
+dotenv.config()
+
+const API_KEY = process.env.API_KEY;
+const BASE_URL = process.env.BASE_URL;
 
 
 async function getWeatherByCity(cityName) {
- try {
-    const apiUrl = `${BASE_URL}?q=${encodeURIComponent(cityName)}&appid=${API_KEY}&units=metric`;
-    const response = await fetch(apiUrl);
+    try {
+        const apiUrl = `${BASE_URL}?q=${encodeURIComponent(cityName)}&appid=${API_KEY}&units=metric`;
+        const response = await fetch(apiUrl);
 
-    if (!response.ok) {
-      if (response.status === 401) throw new Error("API key activating. Try again shortly.");
-      if (response.status === 404) throw new Error(`City '${cityName}' not found.`);
-      throw new Error(`HTTP Error: ${response.status}`);
+        if (!response.ok) {
+            if (response.status === 401) throw new Error("API key activating. Try again shortly.");
+            if (response.status === 404) throw new Error(`City '${cityName}' not found.`);
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Explicitly mapped to match your exact database column names
+        return {
+            city_name: data.name,
+            temp: data.main.temp,
+            humidity: data.main.humidity,
+            condition: data.weather[0].main
+        };
+
+    } catch (error) {
+        console.error(`❌ Error fetching weather for ${cityName}:`, error.message);
+        return null;
     }
-
-    const data = await response.json();
-
-    // Explicitly mapped to match your exact database column names
-    return {
-      city_name: data.name,
-      temp: data.main.temp,
-      humidity: data.main.humidity,
-      condition: data.weather[0].main
-    };
-
-  } catch (error) {
-    console.error(`❌ Error fetching weather for ${cityName}:`, error.message);
-    return null; 
-  }
 }
 
 // 2. Main Analytics Controller
@@ -100,10 +103,10 @@ const analyticsServices = async (req, res) => {
 
         // Return the response object to the client
         return {
-             success: true,
+            success: true,
             data: respData
         }
-      
+
 
     } catch (error) {
         console.log("err", error);
